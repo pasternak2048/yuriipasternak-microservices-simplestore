@@ -1,5 +1,4 @@
-﻿
-namespace Basket.API.Features.Basket.DeleteBasket
+﻿namespace Basket.API.Features.Basket.DeleteBasket
 {
 	public record DeleteBasketCommand(string UserName) : ICommand<DeleteBasketResult>;
 
@@ -14,11 +13,11 @@ namespace Basket.API.Features.Basket.DeleteBasket
 		}
 	}
 
-	public class DeleteBasketCommandHandler : ICommandHandler<DeleteBasketCommand, DeleteBasketResult>
+	public class DeleteBasketCommandHandler(IBasketRepository repository) : ICommandHandler<DeleteBasketCommand, DeleteBasketResult>
 	{
 		public async Task<DeleteBasketResult> Handle(DeleteBasketCommand command, CancellationToken cancellationToken)
 		{
-			//TODO: db implementation
+			await repository.DeeteBasket(command.UserName, cancellationToken);
 
 			return new DeleteBasketResult(true);
 		}
