@@ -1,8 +1,12 @@
+using Discount.Grpc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var assembly = typeof(Program).Assembly;
 
 // Add Services to the container.
+
+//Application Services
 builder.Services.AddCarter();
 
 builder.Services.AddMediatR(config =>
@@ -12,6 +16,7 @@ builder.Services.AddMediatR(config =>
 	config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 
+//Data Services
 builder.Services.AddMarten(opts =>
 {
 	opts.Connection(builder.Configuration.GetConnectionString("Database")!);
@@ -33,6 +38,23 @@ builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
 
 //	return new CachedBasketRepository(basketRepository, provider.GetRequiredService<IDistributedCache>());
 //});
+
+//Grpc Services
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(options =>
+{
+	options.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+	var handler = new HttpClientHandler
+	{
+		ServerCertificateCustomValidationCallback =
+		HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+	};
+
+	return handler;
+});
+
+//Cross-Cutting Services
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
