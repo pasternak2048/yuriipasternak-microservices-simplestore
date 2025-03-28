@@ -29,9 +29,9 @@ namespace Basket.API.Data.Repositories
 			return basket;
 		}
 
-		public async Task<bool> DeeteBasket(string userName, CancellationToken cancellationToken = default)
+		public async Task<bool> DeleteBasket(string userName, CancellationToken cancellationToken = default)
 		{
-			await repository.DeeteBasket(userName, cancellationToken);
+			await repository.DeleteBasket(userName, cancellationToken);
 
 			await cache.RemoveAsync(userName, cancellationToken);
 
